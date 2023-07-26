@@ -9,12 +9,14 @@ using Shawn.Utils;
 using System.Windows;
 using System.Windows.Media.Animation;
 using _1RM.Utils;
-using Microsoft.AppCenter.Crashes;
 using Shawn.Utils.Wpf.Controls;
 using Shawn.Utils.Wpf.FileSystem;
 using Shawn.Utils.Wpf.PageHost;
 using Shawn.Utils.WpfResources.Theme.Styles;
 using System.Collections.Generic;
+#if !Win7
+using Microsoft.AppCenter.Crashes;
+#endif
 
 namespace _1RM.View.ErrorReport
 {
@@ -69,8 +71,10 @@ namespace _1RM.View.ErrorReport
             sb.AppendLine("</details>");
             sb.AppendLine();
 
-            TbErrorInfo.Text = sb.ToString(); 
+            TbErrorInfo.Text = sb.ToString();
+#if !Win7
             MsAppCenterHelper.Error(e, attachments: new List<ErrorAttachmentLog>() { ErrorAttachmentLog.AttachmentWithText(TbErrorInfo.Text, "log.md") });
+#endif
         }
 
         private void Init()

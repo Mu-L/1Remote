@@ -10,7 +10,7 @@
 		<UseWindowsForms>True</UseWindowsForms>
 		<RootNamespace>_1RM</RootNamespace>
 		<AssemblyName>1Remote</AssemblyName>
-		<Configurations>Debug;Release;StoreRelease;ReleaseNet48;StoreDebug</Configurations>
+		<Configurations>Debug;Release;StoreRelease;ReleaseNet48;StoreDebug;ReleaseWin7</Configurations>
 
 		<ApplicationIcon Condition="'$(Configuration)'=='Debug'">LOGO_D.ico</ApplicationIcon>
 		<ApplicationIcon Condition="'$(Configuration)'=='StoreDebug'">LOGO_D.ico</ApplicationIcon>
@@ -18,6 +18,7 @@
 		<TargetFramework Condition="'$(Configuration)'=='Debug'">net6.0-windows</TargetFramework>
 		<TargetFramework Condition="'$(Configuration)'=='Release'">net6.0-windows</TargetFramework>
 		<TargetFramework Condition="'$(Configuration)'=='ReleaseNet48'">net48</TargetFramework>
+		<TargetFramework Condition="'$(Configuration)'=='ReleaseWin7'">net48</TargetFramework>
 		<TargetFramework Condition="'$(Configuration)'=='StoreDebug'">net48</TargetFramework>
 		<TargetFramework Condition="'$(Configuration)'=='StoreRelease'">net48</TargetFramework>
 
@@ -100,6 +101,11 @@
 	  <Optimize>True</Optimize>
 	</PropertyGroup>
 
+	<PropertyGroup Condition="'$(Configuration)'=='ReleaseWin7'">
+	  <DefineConstants>TRACE;Win7</DefineConstants>
+	  <Optimize>True</Optimize>
+	</PropertyGroup>
+
 	<PropertyGroup Condition="'$(Configuration)'=='StoreDebug'">
 		<DefineConstants>TRACE;FOR_MICROSOFT_STORE_ONLY;</DefineConstants>
 		<CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
@@ -162,8 +168,8 @@
 		<PackageReference Include="JsonKnownTypes" Version="0.5.4" />
 		<PackageReference Include="Markdig.Wpf" Version="0.5.0.1" />
 		<PackageReference Include="MySql.Data" Version="8.0.30" />
-		<PackageReference Include="Microsoft.AppCenter.Analytics" Version="5.0.1" />
-		<PackageReference Include="Microsoft.AppCenter.Crashes" Version="5.0.1" />
+		<PackageReference Include="Microsoft.AppCenter.Analytics" Version="5.0.1" Condition="'$(Configuration)'!='ReleaseWin7'" />
+		<PackageReference Include="Microsoft.AppCenter.Crashes" Version="5.0.1" Condition="'$(Configuration)'!='ReleaseWin7'" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
 		<PackageReference Include="NUlid" Version="1.7.1" />
 		<PackageReference Include="SSH.NET" Version="2020.0.2" />

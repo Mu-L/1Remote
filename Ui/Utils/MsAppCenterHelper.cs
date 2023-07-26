@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+#if !Win7
 using Microsoft.AppCenter;
 using Microsoft.AppCenter.Analytics;
 using Microsoft.AppCenter.Crashes;
+#endif
 using Shawn.Utils;
 
 /*
@@ -24,7 +26,7 @@ namespace _1RM.Utils
         private static bool _isStarted = false;
         public static void Init(string secret)
         {
-#if !DEBUG
+#if !DEBUG && !Win7
             AppCenter.LogLevel = LogLevel.Verbose;
             if (secret?.Length == "********-****-****-****-************".Length
                 && "********-****-****-****-************".ToList()
@@ -39,6 +41,7 @@ namespace _1RM.Utils
 #endif
         }
 
+#if !Win7
         public static void Error(Exception e, IDictionary<string, string>? properties = null, List<ErrorAttachmentLog>? attachments = null)
         {
 #if DEBUG
@@ -46,7 +49,7 @@ namespace _1RM.Utils
 #else
             if (_isStarted == false) { return; }
             properties ??= new Dictionary<string, string>();
-            if(!properties.ContainsKey("Version"))
+            if (!properties.ContainsKey("Version"))
                 properties.Add("Version", AppVersion.Version);
             if (attachments != null)
                 Crashes.TrackError(e, properties, attachments.ToArray());
@@ -54,16 +57,25 @@ namespace _1RM.Utils
                 Crashes.TrackError(e, properties);
 #endif
         }
+#else
+        public static void Error(Exception e, IDictionary<string, string>? properties = null)
+        {
+            return;
+        }
+#endif
+
 
 
 
         private static void Trace(EventName eventName, Dictionary<string, string> properties)
         {
             if (_isStarted == false) { return; }
+#if !Win7
 #if DEBUG
             Analytics.TrackEvent(eventName.ToString() + "_Debug", properties);
 #else
             Analytics.TrackEvent(eventName.ToString(), properties);
+#endif
 #endif
         }
 

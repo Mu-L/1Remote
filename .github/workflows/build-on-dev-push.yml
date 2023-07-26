@@ -87,6 +87,16 @@ jobs:
           echo ${{env.BuildVersion}}
           echo ${{env.PreRelease}}
 
+      # Publish the application Net4.8-Win7
+      - name: Publish the application Net4.8-Win7
+        run: dotnet publish $env:Main_Project -p:PublishProfile=./Ui/Properties/PublishProfiles/x64-net48-win7.pubxml
+        # run: msbuild $env:Main_Project -t:rebuild -verbosity:diag -property:Configuration=ReleaseNet48
+      # artifact
+      - uses: actions/upload-artifact@v3
+        with:
+          name: 1Remote-${{env.BuildVersion}}-net4.8-win7(not recommended)
+          path: Ui/bin/Release/net4.8-windows7/publish
+
       # Publish the application Net4.8
       - name: Publish the application Net4.8
         run: dotnet publish $env:Main_Project -p:PublishProfile=./Ui/Properties/PublishProfiles/x64-net48.pubxml
@@ -109,6 +119,7 @@ jobs:
     outputs:
       BuildVersion: ${{env.BuildVersion}}
       PreRelease: ${{env.PreRelease}}
+      artifact_net48_win7: 1Remote-${{env.BuildVersion}}-net4.8-win7(not recommended)
       artifact_net48: 1Remote-${{env.BuildVersion}}-net4.8(not recommended)
       artifact_net6x: 1Remote-${{env.BuildVersion}}-net6-x64
 
@@ -144,6 +155,18 @@ jobs:
         with:
           files: ${{needs.JobBuild.outputs.artifact_net6x}}
           dest: ${{needs.JobBuild.outputs.artifact_net6x}}.zip
+
+      # download artifact net4.8 win7
+      - uses: actions/download-artifact@v2
+        with:
+          name: ${{needs.JobBuild.outputs.artifact_net48_win7}}
+          path: ${{needs.JobBuild.outputs.artifact_net48_win7}}
+      # zip
+      - name: Easy Zip Files
+        uses: vimtor/action-zip@v1
+        with:
+          files: ${{needs.JobBuild.outputs.artifact_net48_win7}}
+          dest: ${{needs.JobBuild.outputs.artifact_net48_win7}}.zip
 
       # download artifact net4.8
       - uses: actions/download-artifact@v2
@@ -191,6 +214,17 @@ jobs:
           asset_name: ${{needs.JobBuild.outputs.artifact_net48}}.zip
           asset_content_type: application/zip
 
+      # upload package net4.8-win7
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ${{needs.JobBuild.outputs.artifact_net48_win7}}.zip
+          asset_name: ${{needs.JobBuild.outputs.artifact_net48_win7}}.zip
+          asset_content_type: application/zip
+
       # set changelogs
       - uses: actions/setup-node@v3
         with:
@@ -230,6 +264,18 @@ jobs:
         with:
           files: ${{needs.JobBuild.outputs.artifact_net6x}}
           dest: ${{needs.JobBuild.outputs.artifact_net6x}}.zip
+
+      # download artifact net4.8 win7
+      - uses: actions/download-artifact@v2
+        with:
+          name: ${{needs.JobBuild.outputs.artifact_net48_win7}}
+          path: ${{needs.JobBuild.outputs.artifact_net48_win7}}
+      # zip
+      - name: Easy Zip Files
+        uses: vimtor/action-zip@v1
+        with:
+          files: ${{needs.JobBuild.outputs.artifact_net48_win7}}
+          dest: ${{needs.JobBuild.outputs.artifact_net48_win7}}.zip
 
       # download artifact net4.8
       - uses: actions/download-artifact@v2
@@ -275,6 +321,17 @@ jobs:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ${{needs.JobBuild.outputs.artifact_net48}}.zip
           asset_name: ${{needs.JobBuild.outputs.artifact_net48}}.zip
+          asset_content_type: application/zip
+
+      # upload package net4.8
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ${{needs.JobBuild.outputs.artifact_net48_win7}}.zip
+          asset_name: ${{needs.JobBuild.outputs.artifact_net48_win7}}.zip
           asset_content_type: application/zip
 
       # set changelogs
